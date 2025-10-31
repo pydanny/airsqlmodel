@@ -78,7 +78,9 @@ def create_async_engine(
         future: In SQLAlchemy, the future=True argument for create_async_engine enables 2.0-style behaviors and API conventions while still running under SQLAlchemy 1.4.
         pool_pre_ping: Makes the engine test a connection with a lightweight SELECT 1 before using it, ensuring stale or dropped connections are detected and replaced automatically.
     """
-    return _create_async_engine(url=url, echo=echo, future=future, pool_pre_ping=pool_pre_ping)
+    return _create_async_engine(
+        url=url, echo=echo, future=future, pool_pre_ping=pool_pre_ping
+    )
 
 
 @asynccontextmanager
@@ -131,7 +133,8 @@ async def create_async_session(
 
 
 async def get_async_session(
-    url: str = ASYNC_DATABASE_URL, echo: _EchoEnum = _EchoEnum.TRUE if DEBUG else _EchoEnum.FALSE
+    url: str = ASYNC_DATABASE_URL,
+    echo: _EchoEnum = _EchoEnum.TRUE if DEBUG else _EchoEnum.FALSE,
 ) -> AsyncGenerator[AsyncSession]:
     """Builder function for `async_session_dependency`."""
     session_factory = await create_async_session(url, echo)
@@ -166,7 +169,9 @@ Example:
 """
 
 
-async def get_object_or_404(session: AsyncSession, model: SQLModel, *args: _BinaryExpression):
+async def get_object_or_404(
+    session: AsyncSession, model: SQLModel, *args: _BinaryExpression
+):
     """Get a record or raise an exception.
 
     Args:
