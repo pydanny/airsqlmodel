@@ -1,5 +1,5 @@
 [project]
-name = "air-sqlmodel"
+name = "airsqlmodel"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,10 +7,20 @@ authors = [
     { name = "Daniel Roy Greenfeld", email = "daniel@feldroy.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "air>=0.39.0",
+    "sqlmodel>=0.0.27",
+]
 
-[project.scripts]
-air-sqlmodel = "air_sqlmodel:main"
+[project.optional-dependencies]
+postgresql = [
+    "greenlet>=3.2.4", # Dependency for SQLAlchemy to run async
+    "asyncpg[postgresql]>=0.30.0",
+    "psycopg-binary>=3.2.12",    
+]
+
+[dependency-groups]
+
 
 [build-system]
 requires = ["uv_build>=0.9.1,<0.10.0"]
