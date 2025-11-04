@@ -1,3 +1,14 @@
+# =============================================================================
+# justfile: A makefile like build script -- Command Runner
+# =============================================================================
+
+set export := true
+
+# -----------------------------------------------------------------------------
+# CONFIG:
+# -----------------------------------------------------------------------------
+VERSION := `awk -F\" '/^version/{print $2}' pyproject.toml`
+
 # List all available just commands
 list:
     just -l
@@ -20,3 +31,10 @@ test:
 pdb:
 	@echo "Running with arg: $(filter-out $@,$(MAKECMDGOALS))"
 	pytest --pdb --maxfail=10 --pdbcls=IPython.terminal.debugger:TerminalPdb $(filter-out $@,$(MAKECMDGOALS))    
+
+
+# Tag and release on GitHub and PyPI
+tag:
+	echo "Tagging version v{{ VERSION }}"
+	git tag -a v{{ VERSION }} -m "Creating version v{{ VERSION }}"
+	git push origin v{{ VERSION }}
