@@ -2,11 +2,28 @@
 
 Right now we have verified this project supports PostgreSQL and SQLite. It is unclear if other databases are supported, but they may be. Please open an issue if you have success or failure with other databases.
 
-## Air plus SQLModel
+## Air plus SQLModel Made Easy!
 
 [SQLModel](https://sqlmodel.tiangolo.com/) is a wrapper around the venerable and proven SQLAlchemy library. Like Typer, FastAPI, pydantic, and Air, SQLModel allows for definition of critical objects with type annotations - in this case database tables. SQLModel makes SQLAlchemy a bit easier to use, although it's possible to drop down to the raw power of SQLAlchemy at any time.
 
 Using Air's SQL module requires an understanding of SQLModel. 
+
+## Installation
+
+You can install AirSQLModel with UV. Here's how to install it with PostgreSQL support:
+
+```bash
+uv add "airsqlmodel[postgresql]"
+```
+
+And now for SQLite support:
+
+```bash
+uv add "airsqlmodel[sqlite]"
+```
+
+> [!NOTE]  
+> Currently AirSQLModel only supports PostgreSQL and SQLite. If you try to use another database, submit a pull request or open an issue.
 
 ## Configuring Air for SQL
 

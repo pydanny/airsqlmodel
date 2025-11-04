@@ -31,10 +31,9 @@ wheels = [
 
 [[package]]
 name = "airsqlmodel"
-version = "0.1.2"
+version = "0.1.3"
 source = { editable = "." }
 dependencies = [
-    { name = "aiosqlite" },
     { name = "air" },
     { name = "greenlet" },
     { name = "sqlmodel" },
@@ -43,8 +42,10 @@ dependencies = [
 [package.optional-dependencies]
 postgresql = [
     { name = "asyncpg" },
-    { name = "greenlet" },
     { name = "psycopg-binary" },
+]
+sqlite = [
+    { name = "aiosqlite" },
 ]
 
 [package.dev-dependencies]
@@ -59,15 +60,14 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aiosqlite", specifier = ">=0.21.0" },
+    { name = "aiosqlite", marker = "extra == 'sqlite'", specifier = ">=0.21.0" },
     { name = "air", specifier = ">=0.39.0" },
     { name = "asyncpg", marker = "extra == 'postgresql'", specifier = ">=0.30.0" },
     { name = "greenlet", specifier = ">=3.2.4" },
-    { name = "greenlet", marker = "extra == 'postgresql'", specifier = ">=3.2.4" },
     { name = "psycopg-binary", marker = "extra == 'postgresql'", specifier = ">=3.2.12" },
     { name = "sqlmodel", specifier = ">=0.0.27" },
 ]
-provides-extras = ["postgresql"]
+provides-extras = ["postgresql", "sqlite"]
 
 [package.metadata.requires-dev]
 dev = [
