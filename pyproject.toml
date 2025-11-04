@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Daniel Roy Greenfeld", email = "daniel@feldroy.com" }
 ]
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
     "aiosqlite>=0.21.0",
     "air>=0.39.0",
@@ -14,6 +14,7 @@ dependencies = [
     "sqlmodel>=0.0.27",
 ]
 urls.Homepage = "https://github.com/pydanny/airsqlmodel"
+urls.Issues = "https://github.com/pydanny/airsqlmodel/issues"
 
 [project.optional-dependencies]
 postgresql = [
