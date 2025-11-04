@@ -5,7 +5,6 @@ from sqlalchemy import Engine, text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from sqlmodel import Field, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
-import sqlmodel
 
 from air.applications import Air
 from air.exceptions import ObjectDoesNotExist
@@ -13,18 +12,20 @@ import airsqlmodel
 
 
 def test_create_sync_engine() -> None:
-    engine = airsqlmodel.create_sync_engine('sqlite:///:memory:')
+    engine = airsqlmodel.create_sync_engine("sqlite:///:memory:")
     assert isinstance(engine, Engine)
 
 
 def test_create_async_engine() -> None:
-    engine = airsqlmodel.create_async_engine('sqlite+aiosqlite:///:memory:')
+    engine = airsqlmodel.create_async_engine("sqlite+aiosqlite:///:memory:")
     assert isinstance(engine, AsyncEngine)
 
 
 @pytest.mark.asyncio
 async def test_create_async_session() -> None:
-    session_factory = await airsqlmodel.create_async_session('sqlite+aiosqlite:///:memory:')
+    session_factory = await airsqlmodel.create_async_session(
+        "sqlite+aiosqlite:///:memory:"
+    )
     assert isinstance(session_factory, async_sessionmaker)
 
 
@@ -32,7 +33,7 @@ async def test_create_async_session() -> None:
 async def test_get_async_session() -> None:
     """Test that get_async_session yields an AsyncSession and properly closes it."""
     # Test the async generator the way it's meant to be used with async context manager
-    async for session in airsqlmodel.get_async_session('sqlite+aiosqlite:///:memory:'):
+    async for session in airsqlmodel.get_async_session("sqlite+aiosqlite:///:memory:"):
         # Check that we got an AsyncSession
         assert isinstance(session, AsyncSession)
         assert session.is_active is True
@@ -46,7 +47,9 @@ async def test_get_async_session() -> None:
 async def test_get_async_session_with_custom_params() -> None:
     """Test get_async_session with custom URL and echo parameters."""
     # Test with custom parameters
-    async for session in airsqlmodel.get_async_session(url="sqlite+aiosqlite:///:memory:", echo=airsqlmodel._EchoEnum.FALSE):
+    async for session in airsqlmodel.get_async_session(
+        url="sqlite+aiosqlite:///:memory:", echo=airsqlmodel._EchoEnum.FALSE
+    ):
         assert isinstance(session, AsyncSession)
         break
 
@@ -67,7 +70,9 @@ async def test_get_object_or_404():
     async with async_engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
 
-    async_session_maker = await airsqlmodel.create_async_session("sqlite+aiosqlite:///:memory:", async_engine=async_engine)
+    async_session_maker = await airsqlmodel.create_async_session(
+        "sqlite+aiosqlite:///:memory:", async_engine=async_engine
+    )
 
     async with async_session_maker() as session:  # pyrefly:ignore[bad-context-manager]
         # Add test data
@@ -78,7 +83,9 @@ async def test_get_object_or_404():
         await session.commit()
 
         # Test successful retrieval
-        found_user = await airsqlmodel.get_object_or_404(session, TestUser, TestUser.id == 1)
+        found_user = await airsqlmodel.get_object_or_404(
+            session, TestUser, TestUser.id == 1
+        )
         assert found_user.id == 1
         assert found_user.name == "John Doe"
         assert found_user.email == "john@example.com"
@@ -98,7 +105,9 @@ async def test_get_object_or_404():
 
         # Test ObjectDoesNotExist exception with multiple conditions
         with pytest.raises(ObjectDoesNotExist) as exc_info:
-            await airsqlmodel.get_object_or_404(session, TestUser, TestUser.id == 1, TestUser.name == "Wrong Name")
+            await airsqlmodel.get_object_or_404(
+                session, TestUser, TestUser.id == 1, TestUser.name == "Wrong Name"
+            )
 
         assert exc_info.value.status_code == 404
 

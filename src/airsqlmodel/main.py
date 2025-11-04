@@ -83,9 +83,7 @@ def create_async_engine(
     )
 
 
-
 def create_async_db_lifespan(url: str = DATABASE_URL):
-
     @asynccontextmanager
     async def async_db_lifespan(app: _AirApp):
         """Application Lifespan object for ensuring that database connections remain active.
@@ -107,6 +105,7 @@ def create_async_db_lifespan(url: str = DATABASE_URL):
             await conn.run_sync(lambda _: None)
         yield
         await async_engine.dispose()
+
     return async_db_lifespan
 
 
