@@ -84,7 +84,7 @@ def create_async_engine(
 
 
 
-async def create_async_db_lifespan(url: str = DATABASE_URL):
+def create_async_db_lifespan(url: str = DATABASE_URL):
 
     @asynccontextmanager
     async def async_db_lifespan(app: _AirApp):
@@ -107,8 +107,7 @@ async def create_async_db_lifespan(url: str = DATABASE_URL):
             await conn.run_sync(lambda _: None)
         yield
         await async_engine.dispose()
-    lifespan = await async_db_lifespan
-    return lifespan
+    return async_db_lifespan
 
 
 async def create_async_session(
@@ -164,11 +163,11 @@ Example:
     from db import Heroes
 
     app = air.Air()
-    AsyncSession = air.ext.sqlmodel.AsyncSession
+    AsyncSession = airsqlmodel.AsyncSession
 
 
     @app.page
-    async def index(session: AsyncSession = air.ext.sqlmodel.async_session_dependency):
+    async def index(session: AsyncSession = airsqlmodel.async_session_dependency):
         statement = select(tables.Heroes)
         heroes = await session.exec(statement=statement)
         return air.Ul(
@@ -195,7 +194,7 @@ async def get_object_or_404(
         app = air.Air()
 
         @app.get('/heroes/{name: str}')
-        async def hero(name: str, session = Depends(air.ext.sqlmodel.get_async_session)):
+        async def hero(name: str, session = Depends(airsqlmodel.get_async_session)):
             hero = await get_object_or_404(session, model, Hero.name==name)
             return air.layouts.mvpcss(
                 air.H1(hero.name),
