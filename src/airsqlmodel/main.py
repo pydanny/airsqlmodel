@@ -18,8 +18,8 @@ from sqlmodel import (
 )
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from ..applications import Air as _AirApp
-from ..exceptions import ObjectDoesNotExist
+from air.applications import Air as _AirApp
+from air.exceptions import ObjectDoesNotExist
 
 DEBUG = _getenv("DEBUG", "false").lower() in ("1", "true", "yes")
 """Environment variable for setting DEBUG loglevel."""
@@ -83,24 +83,32 @@ def create_async_engine(
     )
 
 
-@asynccontextmanager
-async def async_db_lifespan(app: _AirApp):
-    """Application Lifespan object for ensuring that database connections remain active.
 
-    Not including this can result in `sqlalchemy.exc.OperationalError` or `asyncpg.exceptions.ConnectionDoesNotExistError`
-    errors when the database connection times out because of inactivity.
+async def create_async_db_lifespan(url: str = DATABASE_URL):
 
-    Example:
+    @asynccontextmanager
+    async def async_db_lifespan(app: _AirApp):
+        """Application Lifespan object for ensuring that database connections remain active.
 
-        import air
+        Not including this can result in `sqlalchemy.exc.OperationalError` or `asyncpg.exceptions.ConnectionDoesNotExistError`
+        errors when the database connection times out because of inactivity.
 
-        app = air.Air(lifespan=air.ext.sqlmodel.async_db_lifespan)
-    """
-    async_engine = create_async_engine()
-    async with async_engine.begin() as conn:
-        await conn.run_sync(lambda _: None)
-    yield
-    await async_engine.dispose()
+        Example:
+
+            import air
+            from airsqlmodel import create_async_db_lifespan
+
+            lifespan = create_async_db_lifespan('path/to/db')
+
+            app = air.Air(lifespan=lifespan)
+        """
+        async_engine = create_async_engine(url)
+        async with async_engine.begin() as conn:
+            await conn.run_sync(lambda _: None)
+        yield
+        await async_engine.dispose()
+    lifespan = await async_db_lifespan
+    return lifespan
 
 
 async def create_async_session(
@@ -198,9 +206,11 @@ async def get_object_or_404(
     stmt = select(model)
     for arg in args:
         stmt = stmt.where(arg)
+
     results = await session.exec(stmt)
     if obj := results.one_or_none():
         return obj
+
     error = ObjectDoesNotExist(status_code=404)
     error.add_note(f"{model=}")
     error.add_note(f"{args=}")
